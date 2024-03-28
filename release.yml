@@ -34,12 +34,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - "./master/configs/:/var/www/MISP/app/Config/"
-      - "./master/logs/:/var/www/MISP/app/tmp/logs/"
-      - "./master/files/:/var/www/MISP/app/files/"
-      - "./master/ssl/:/etc/nginx/certs/"
-      - "./master/gnupg/:/var/www/MISP/.gnupg/"
     environment:
       - "BASE_URL=https://misp-train.azurewebsites.net"
       - "CRON_USER_ID="
