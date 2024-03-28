@@ -1,0 +1,110 @@
+version: '3'
+services:
+  # This is capable to relay via gmail, Amazon SES, or generic relays
+  # See: https://hub.docker.com/r/ixdotai/smtp
+  mail:
+    image: ixdotai/smtp
+    environment:
+      - "SMARTHOST_ADDRESS="
+      - "SMARTHOST_PORT="
+      - "SMARTHOST_USER="
+      - "SMARTHOST_PASSWORD="
+      - "SMARTHOST_ALIASES="
+
+  redis:
+    image: redis:7.2
+
+  db:
+    image: mariadb:10.11
+    restart: always
+    environment:
+      - "MYSQL_USER=misp"
+      - "MYSQL_PASSWORD=example"
+      - "MYSQL_ROOT_PASSWORD=password"
+      - "MYSQL_DATABASE=misp"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    cap_add:
+      - SYS_NICE
+  misp-core:
+    image: ghcr.io/malmas18/misp-docker/misp-core:latest
+    depends_on:
+      - redis
+      - db
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./master/configs/:/var/www/MISP/app/Config/"
+      - "./master/logs/:/var/www/MISP/app/tmp/logs/"
+      - "./master/files/:/var/www/MISP/app/files/"
+      - "./master/ssl/:/etc/nginx/certs/"
+      - "./master/gnupg/:/var/www/MISP/.gnupg/"
+    environment:
+      - "BASE_URL=https://misp-train.azurewebsites.net"
+      - "CRON_USER_ID="
+      - "DISABLE_IPV6="
+      - "DISABLE_SSL_REDIRECT=false"
+      # standard settings
+      - "ADMIN_EMAIL=admin@admin.test"
+      - "ADMIN_PASSWORD=admin"
+      - "ADMIN_KEY="
+      - "ADMIN_ORG="
+      - "GPG_PASSPHRASE="
+      # OIDC authentication settings
+      - "OIDC_ENABLE="
+      - "OIDC_PROVIDER_URL="
+      - "OIDC_CLIENT_ID="
+      - "OIDC_CLIENT_SECRET="
+      - "OIDC_ROLES_PROPERTY="
+      - "OIDC_ROLES_MAPPING="
+      - "OIDC_DEFAULT_ORG="
+      # LDAP authentication settings
+      - "LDAP_ENABLE="
+      - "LDAP_APACHE_ENV="
+      - "LDAP_SERVER="
+      - "LDAP_STARTTLS="
+      - "LDAP_READER_USER="
+      - "LDAP_READER_PASSWORD="
+      - "LDAP_DN="
+      - "LDAP_SEARCH_FILTER="
+      - "LDAP_SEARCH_ATTRIBUTE="
+      - "LDAP_FILTER="
+      - "LDAP_DEFAULT_ROLE_ID="
+      - "LDAP_DEFAULT_ORG="
+      - "LDAP_EMAIL_FIELD="
+      - "LDAP_OPT_PROTOCOL_VERSION="
+      - "LDAP_OPT_NETWORK_TIMEOUT="
+      - "LDAP_OPT_REFERRALS="
+      - "SYNCSERVERS="
+      - |
+        SYNCSERVERS_1_DATA=
+        {
+          "remote_org_uuid": "",
+          "name": "",
+          "authkey": "",
+          "url": "",
+          "pull": true
+        }
+      # mysql settings
+      - "MYSQL_HOST=db"
+      - "MYSQL_PORT=3306"
+      - "MYSQL_USER=misp"
+      - "MYSQL_PASSWORD=example"
+      - "MYSQL_DATABASE=misp"
+  
+  misp-modules:
+    image: ghcr.io/misp/misp-docker/misp-modules:latest
+    build:
+      context: modules/.
+      args:
+        - MODULES_TAG=v2.4.187
+        - LIBFAUP_COMMIT3a26d0a
+    environment:
+      - "REDIS_BACKEND=redis"
+    depends_on:
+      - redis
+
+volumes:
+    mysql_data:
+      driver: local
