@@ -34,6 +34,12 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - "mispcore_configs:/var/www/MISP/app/Config/"
+      - "mispcore_logs:/var/www/MISP/app/tmp/logs/"
+      - "mispcore_files:/var/www/MISP/app/files/"
+      - "mispcore_ssl:/etc/nginx/certs/"
+      - "mispcore_gnupg:/var/www/MISP/.gnupg/"
     environment:
       - "BASE_URL=https://misp-train.azurewebsites.net"
       - "CRON_USER_ID="
@@ -102,3 +108,8 @@ services:
 volumes:
     mysql_data:
       driver: local
+    mispcore_configs:
+    mispcore_logs:
+    mispcore_files:
+    mispcore_ssl:
+    mispcore_gnupg:
