@@ -48,9 +48,6 @@ services:
     depends_on:
       - redis
       - db
-    ports:
-      - "80:80"
-      - "443:443"
     volumes:
       - "./configs/:/var/www/MISP/app/Config/"
       - "./logs/:/var/www/MISP/app/tmp/logs/"
@@ -142,4 +139,7 @@ services:
       - caddy_config:/config
 
 volumes:
-    mysql_data:
+  mysql_data:
+  caddy_data:
+  caddy_config:
+
