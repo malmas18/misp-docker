@@ -27,7 +27,7 @@ services:
     cap_add:
       - SYS_NICE
   misp-core:
-    image: ghcr.io/malmas18/misp-docker/misp-core:latest
+    image: ghcr.io/misp/misp-docker/misp-core:latest
     depends_on:
       - redis
       - db
