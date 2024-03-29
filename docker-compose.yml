@@ -128,5 +128,10 @@ services:
     depends_on:
       - redis
 
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+      
 volumes:
     mysql_data:
