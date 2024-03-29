@@ -1,31 +1,15 @@
 {
     debug
 }
-* {
+localhost {
     encode gzip zstd
-	respond "hello world"
-    # Send API requests to backend
-    reverse_proxy /central/*  {
+	
+    reverse_proxy {
 		to https://misp-core
 		transport http {
 			tls
 			tls_insecure_skip_verify
-            # tls_server_name misp-core
 		}
 		
 	}
 }
-# localhost {
-#     encode gzip zstd
-
-#     # Send API requests to backend
-#     reverse_proxy /central/* {
-# 		to https://misp-core
-# 		transport http {
-# 			tls
-# 			tls_insecure_skip_verify
-#             # tls_server_name misp-core
-# 		}
-		
-# 	}
-# }
