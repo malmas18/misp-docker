@@ -3,7 +3,7 @@
 }
 * {
     encode gzip zstd
-	responsd "hello world"
+	respond "hello world"
     # Send API requests to backend
     reverse_proxy /central/*  {
 		to https://misp-core
